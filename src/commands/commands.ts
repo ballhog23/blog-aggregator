@@ -1,6 +1,26 @@
-export type CommandName = 'login' | 'register' | 'reset';
-type CommandHandler = (cmdName: CommandName, ...args: string[]) => Promise<void>;
-export type CommandsRegistry = Partial<Record<CommandName, CommandHandler>>;
+import type { SelectUser } from "src/lib/db/schema";
+
+export type CommandName =
+    'login' |
+    'register' |
+    'reset' |
+    'users' |
+    'agg' |
+    'addfeed' |
+    'feeds' |
+    'follow' |
+    'following' |
+    'unfollow';
+
+export type CommandHandler = (cmdName: CommandName, ...args: string[]) => Promise<void>;
+
+export type CommandsRegistry = Record<CommandName, CommandHandler>;
+
+export type UserCommandHandler = (
+    cmdName: CommandName,
+    user: SelectUser,
+    ...args: string[]
+) => Promise<void>;
 
 export function registerCommand(registry: CommandsRegistry, cmdName: CommandName, handler: CommandHandler) {
     registry[cmdName] = handler;
