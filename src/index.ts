@@ -1,7 +1,7 @@
-console.log('boot start')
 import type { CommandName, CommandsRegistry } from "./commands/commands";
 import { registerCommand, runCommand } from "./commands/commands";
-import { handlerDeleteAllUsers, handlerLoginUser, handlerRegisterUser } from './commands/users';
+import { handlerGetAllUsers, handlerLoginUser, handlerRegisterUser } from './commands/users';
+import { handlerDeleteAllUsers } from "./commands/reset";
 
 async function main() {
 	const args = process.argv.slice(2);
@@ -15,6 +15,7 @@ async function main() {
 	registerCommand(commandsRegistry, "register", handlerRegisterUser);
 	registerCommand(commandsRegistry, "login", handlerLoginUser);
 	registerCommand(commandsRegistry, "reset", handlerDeleteAllUsers);
+	registerCommand(commandsRegistry, "users", handlerGetAllUsers);
 
 	const commandName = args[0] as CommandName;
 	const commandArgs = args.slice(1);
