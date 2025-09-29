@@ -9,6 +9,7 @@ type Config = {
 
 export function setUser(userName: string) {
     const base = readBaseConfig();
+    if (userName.length === 0) throw new Error("Please provide a username");
     writeConfig({ dbUrl: base.dbUrl, currentUserName: userName });
 }
 
