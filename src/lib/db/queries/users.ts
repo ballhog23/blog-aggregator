@@ -15,6 +15,14 @@ export async function getUser(name: SelectUser['name']) {
     return rows[0];
 }
 
+export async function getUserById(id: SelectUser['id']) {
+    const rows = await db.select().from(users).where(eq(users.id, id));
+
+    if (rows.length === 0) throw new Error('User does not exist');
+
+    return rows[0];
+}
+
 export async function getAllUsers() {
     const rows = await db.select().from(users);
 

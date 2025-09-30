@@ -1,7 +1,7 @@
 import type { SelectFeed, SelectUser } from "src/lib/db/schema";
 import type { CommandName } from "./commands";
-import { getUser } from "src/lib/db/queries/users";
-import { insertFeed, selectFeed } from "src/lib/db/queries/feeds";
+import { getUser, getUserById } from "src/lib/db/queries/users";
+import { insertFeed, selectAllFeeds } from "src/lib/db/queries/feeds";
 import { readConfig } from "src/config";
 
 export async function handlerAddFeed(cmdName: CommandName, ...args: string[]) {
@@ -19,6 +19,28 @@ export async function handlerAddFeed(cmdName: CommandName, ...args: string[]) {
     const url = args[1];
     const feed = await insertFeed(name, url, user.id);
     printFeed(feed, user);
+}
+
+export type FeedData = {
+    name: string,
+    url: string,
+    user: string
+}
+
+export async function handlerSelectAllFeeds(_: CommandName) {
+    const feeds = await selectAllFeeds();
+
+    if (feeds.length === 0) {
+        console.log('No feeds found');
+        return;
+    }
+
+    console.log(`Found %d feeds:\n`, feeds.length);
+    for (const feed of feeds) {
+        const user = await getUserById(feed.userId);
+        if (!user) throw new Error(`failed to find feed for ${feed.id}`);
+        printFeed(feed, user);
+    }
 }
 
 function printFeed(feed: SelectFeed, user: SelectUser) {

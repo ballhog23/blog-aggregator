@@ -8,10 +8,10 @@ export async function insertFeed(name: InsertFeed['name'], url: InsertFeed['url'
     return result;
 };
 
-export async function selectFeed(name: SelectFeed['name']) {
-    const rows = await db.select().from(feeds).where(eq(feeds.name, name));
+export async function selectAllFeeds() {
+    const rows = await db.select().from(feeds);
 
-    if (rows.length === 0) throw new Error('feed does not exist.')
+    if (rows.length === 0) throw new Error('No data was found in feeds_table');
 
-    return rows[0];
+    return rows;
 }
