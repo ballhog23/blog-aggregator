@@ -2,6 +2,7 @@ import type { CommandName, CommandsRegistry } from "./commands/commands";
 import { registerCommand, runCommand } from "./commands/commands";
 import { handlerGetAllUsers, handlerLoginUser, handlerRegisterUser } from './commands/users';
 import { handlerDeleteAllUsers } from "./commands/reset";
+import { handlerAggregate } from "./commands/agg";
 
 async function main() {
 	const args = process.argv.slice(2);
@@ -16,6 +17,7 @@ async function main() {
 	registerCommand(commandsRegistry, "login", handlerLoginUser);
 	registerCommand(commandsRegistry, "reset", handlerDeleteAllUsers);
 	registerCommand(commandsRegistry, "users", handlerGetAllUsers);
+	registerCommand(commandsRegistry, "agg", handlerAggregate);
 
 	const commandName = args[0] as CommandName;
 	const commandArgs = args.slice(1);
