@@ -22,11 +22,16 @@ async function main() {
 
 	try {
 		await runCommand(commandsRegistry, commandName, ...commandArgs);
-		process.exit(0);
-	} catch (e: any) {
-		console.error(`Error running command ${commandName}: ${e?.message ?? e}`);
+	} catch (err) {
+		if (err instanceof Error) {
+			console.error(`Error running command ${commandName}: ${err.message}`);
+		} else {
+			console.error(`Error running command ${commandName}: ${err}`);
+		}
 		process.exit(1);
 	}
+
+	process.exit(0);
 }
 
 main();

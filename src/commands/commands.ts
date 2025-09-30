@@ -1,6 +1,6 @@
 export type CommandName = 'login' | 'register' | 'reset' | 'users';
 type CommandHandler = (cmdName: CommandName, ...args: string[]) => Promise<void>;
-export type CommandsRegistry = Partial<Record<CommandName, CommandHandler>>;
+export type CommandsRegistry = Record<CommandName, CommandHandler>;
 
 export function registerCommand(registry: CommandsRegistry, cmdName: CommandName, handler: CommandHandler) {
     registry[cmdName] = handler;
