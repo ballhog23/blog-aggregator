@@ -1,9 +1,7 @@
 import { XMLParser } from "fast-xml-parser"
 
 export type RSSFeed = {
-    rss: {
-        channel: RSSChannel
-    }
+    channel: RSSChannel
 }
 
 export type RSSChannel = {
@@ -20,66 +18,57 @@ export type RSSItem = {
     pubDate: string
 }
 
-
 export async function fetchFeed(feedURL: string) {
     const options: RequestInit = {
-        method: 'GET',
         headers: {
-            'User-Agent': 'gator'
+            'User-Agent': 'gator',
+            accept: 'application/rss+xml'
         }
     }
     const res = await fetch(feedURL, options);
 
-    if (!res) throw new Error('error fetching RSS feed');
+    if (!res.ok) throw new Error(`failed to fetch feed: ${res.status} ${res.statusText}`);
 
-    const feed = await res.text();
-    if (typeof feed !== 'string') throw new Error('error creating string from response');
-
+    const xml = await res.text();
     const parser = new XMLParser();
-    const parsed: RSSFeed = parser.parse(feed);
-    const rss = parsed.rss;
-    const { channel } = rss;
+    const parsed = parser.parse(xml);
+    const channel = parsed.rss?.channel;
 
-    if (!channel) throw new Error('RSS feed does not have channel property');
+    if (!channel) throw new Error("failed to parse channel");
 
     const { title, link, description, item } = channel;
 
-    if (!title || !link || !description) {
+    if (!channel || !title || !link || !description || !item) {
         throw new Error('title, link, or description property is not present on channel object');
     }
 
-    if (title.length < 1 || link.length < 1 || description.length < 1) {
-        throw new Error('title, link, or description property is an empty string');
-    }
+    const items: any[] = Array.isArray(item) ?
+        item :
+        [item];
 
-    const hasItemProp = Object.hasOwnProperty('item');
-    if (!hasItemProp && !Array.isArray(item)) {
-        channel.item = [];
-    }
+    const rssItems: RSSItem[] = [];
 
-    if (item.length === 0) return {};
-
-    const cleanedItemsArray: RSSItem[] = [];
-
-    for (const post of item) {
-        const [title, link, description, pubDate] = item;
+    for (const post of items) {
+        const { title, link, description, pubDate } = post;
 
         if (!title || !link || !description || !pubDate) continue;
 
-        cleanedItemsArray.push(post);
+        rssItems.push({
+            title,
+            link,
+            description,
+            pubDate
+        });
     }
 
-    const RSSData = {
-        rss: {
-            channel: {
-                title,
-                link,
-                description,
-                item: cleanedItemsArray
-            }
+    const rss = {
+        channel: {
+            title,
+            link,
+            description,
+            item: rssItems
         }
     } satisfies RSSFeed;
 
-    console.dir(RSSData, { depth: null })
-    return RSSData;
+    return rss;
 }

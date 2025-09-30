@@ -2,7 +2,7 @@ import type { CommandName, CommandsRegistry } from "./commands/commands";
 import { registerCommand, runCommand } from "./commands/commands";
 import { handlerGetAllUsers, handlerLoginUser, handlerRegisterUser } from './commands/users';
 import { handlerDeleteAllUsers } from "./commands/reset";
-import { handlerAggregate } from "./commands/agg";
+import { handlerAggregate } from "./commands/aggregate";
 
 async function main() {
 	const args = process.argv.slice(2);

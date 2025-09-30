@@ -5,8 +5,12 @@ import { createUser, getAllUsers, getUser } from '../lib/db/queries/users';
 export async function handlerLoginUser(cmdName: CommandName, ...args: string[]) {
     checkArgs(cmdName, args);
     const name = args[0];
-    await getUser(name);
-    setUser(name);
+    const existingUser = await getUser(name);
+    if (!existingUser) {
+        throw new Error(`User ${name} not found`);
+    }
+
+    setUser(existingUser.name);
     console.log(`Current User: ${name}.`);
 }
 
