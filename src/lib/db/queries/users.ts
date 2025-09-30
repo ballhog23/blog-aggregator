@@ -15,11 +15,6 @@ export async function getUser(name: SelectUser['name']) {
     return rows[0];
 }
 
-export async function deleteAllUsers() {
-    await db.delete(users);
-    console.log('users_table reset was successful');
-}
-
 export async function getAllUsers() {
     const rows = await db.select().from(users);
 

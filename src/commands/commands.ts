@@ -1,4 +1,4 @@
-export type CommandName = 'login' | 'register' | 'reset' | 'users' | 'agg';
+export type CommandName = 'login' | 'register' | 'reset' | 'users' | 'agg' | 'addfeed';
 type CommandHandler = (cmdName: CommandName, ...args: string[]) => Promise<void>;
 export type CommandsRegistry = Record<CommandName, CommandHandler>;
 
