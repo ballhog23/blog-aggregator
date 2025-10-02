@@ -1,9 +1,11 @@
 import type { CommandName, CommandsRegistry } from "./commands/commands";
 import { registerCommand, runCommand } from "./commands/commands";
 import { handlerGetAllUsers, handlerLoginUser, handlerRegisterUser } from './commands/users';
-import { handlerDeleteAllUsers } from "./commands/reset";
+import { handlerDeleteAllTableRows } from "./commands/reset";
 import { handlerAggregate } from "./commands/aggregate";
 import { handlerAddFeed, handlerSelectAllFeeds } from "./commands/feeds";
+import { handlerCreateFeedFollow } from "./commands/follow";
+import { handlerGetFeedFollows } from "./commands/following";
 
 async function main() {
 	const args = process.argv.slice(2);
@@ -16,11 +18,13 @@ async function main() {
 	const commandsRegistry = {} as CommandsRegistry;
 	registerCommand(commandsRegistry, "register", handlerRegisterUser);
 	registerCommand(commandsRegistry, "login", handlerLoginUser);
-	registerCommand(commandsRegistry, "reset", handlerDeleteAllUsers);
+	registerCommand(commandsRegistry, "reset", handlerDeleteAllTableRows);
 	registerCommand(commandsRegistry, "users", handlerGetAllUsers);
 	registerCommand(commandsRegistry, "agg", handlerAggregate);
 	registerCommand(commandsRegistry, "addfeed", handlerAddFeed);
 	registerCommand(commandsRegistry, "feeds", handlerSelectAllFeeds);
+	registerCommand(commandsRegistry, "follow", handlerCreateFeedFollow);
+	registerCommand(commandsRegistry, "following", handlerGetFeedFollows);
 
 	const commandName = args[0] as CommandName;
 	const commandArgs = args.slice(1);

@@ -2,6 +2,7 @@ import type { SelectFeed, SelectUser } from "src/lib/db/schema";
 import type { CommandName } from "./commands";
 import { getUser, getUserById } from "src/lib/db/queries/users";
 import { insertFeed, selectAllFeeds } from "src/lib/db/queries/feeds";
+import { createFeedFollows } from "src/lib/db/queries/follows";
 import { readConfig } from "src/config";
 
 export async function handlerAddFeed(cmdName: CommandName, ...args: string[]) {
@@ -18,13 +19,8 @@ export async function handlerAddFeed(cmdName: CommandName, ...args: string[]) {
     const name = args[0];
     const url = args[1];
     const feed = await insertFeed(name, url, user.id);
-    printFeed(feed, user);
-}
-
-export type FeedData = {
-    name: string,
-    url: string,
-    user: string
+    const feedFollows = await createFeedFollows(feed.id, user.id);
+    console.log(`Feed: ${feedFollows.feedName} Followed By: ${feedFollows.userName}`);
 }
 
 export async function handlerSelectAllFeeds(_: CommandName) {

@@ -15,6 +15,13 @@
       "when": 1759220468334,
       "tag": "0001_fine_old_lace",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759383713408,
+      "tag": "0002_peaceful_shiva",
+      "breakpoints": true
     }
   ]
 }
