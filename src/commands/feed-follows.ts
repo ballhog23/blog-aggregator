@@ -1,20 +1,12 @@
 import type { CommandName } from "./commands";
-import { readConfig } from "src/config";
+import type { SelectUser } from "src/lib/db/schema";
 import { createFeedFollow } from "src/lib/db/queries/feed-follows";
 import { getFeedFollowsForUser } from "src/lib/db/queries/feed-follows";
 import { selectFeedByURL } from "src/lib/db/queries/feeds";
-import { getUser } from "src/lib/db/queries/users";
 
-export async function handlerCreateFeedFollow(cmdName: CommandName, ...args: string[]) {
+export async function handlerCreateFeedFollow(cmdName: CommandName, user: SelectUser, ...args: string[]) {
     if (args.length !== 1) {
         throw new Error(`usage: ${cmdName} <feed_url>`);
-    }
-
-    const config = readConfig();
-    const user = await getUser(config.currentUserName);
-
-    if (!user) {
-        throw new Error(`User ${config.currentUserName} not found`);
     }
 
     const feedURL = args[0];
@@ -28,15 +20,7 @@ export async function handlerCreateFeedFollow(cmdName: CommandName, ...args: str
     printFeedFollow(ffRow.userName, ffRow.feedName);
 }
 
-export async function handlerListFeedFollow(_: CommandName) {
-    const config = readConfig();
-    const curUser = config.currentUserName;
-    const user = await getUser(curUser);
-
-    if (!user) {
-        throw new Error(`User ${config.currentUserName} not found`);
-    }
-
+export async function handlerListFeedFollow(_: CommandName, user: SelectUser) {
     const feedFollows = await getFeedFollowsForUser(user.id);
 
     if (feedFollows.length === 0) {

@@ -1,5 +1,7 @@
 export type CommandName = 'login' | 'register' | 'reset' | 'users' | 'agg' | 'addfeed' | 'feeds' | 'follow' | 'following';
-type CommandHandler = (cmdName: CommandName, ...args: string[]) => Promise<void>;
+
+export type CommandHandler = (cmdName: CommandName, ...args: string[]) => Promise<void>;
+
 export type CommandsRegistry = Record<CommandName, CommandHandler>;
 
 export function registerCommand(registry: CommandsRegistry, cmdName: CommandName, handler: CommandHandler) {

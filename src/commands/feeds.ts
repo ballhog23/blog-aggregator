@@ -1,20 +1,13 @@
 import type { SelectFeed, SelectUser } from "src/lib/db/schema";
 import type { CommandName } from "./commands";
-import { readConfig } from "src/config";
 import { printFeedFollow } from "./feed-follows";
-import { getUser, getUserById } from "src/lib/db/queries/users";
+import { getUserById } from "src/lib/db/queries/users";
 import { insertFeed, selectAllFeeds } from "src/lib/db/queries/feeds";
 import { createFeedFollow } from "src/lib/db/queries/feed-follows";
 
-export async function handlerAddFeed(cmdName: CommandName, ...args: string[]) {
+export async function handlerAddFeed(cmdName: CommandName, user: SelectUser, ...args: string[]) {
     if (args.length !== 2) {
         throw new Error(`usage: ${cmdName} <feed_name> <url>`);
-    }
-    const config = readConfig();
-    const user = await getUser(config.currentUserName);
-
-    if (!user) {
-        throw new Error(`User ${config.currentUserName} not found`);
     }
 
     const feedName = args[0];

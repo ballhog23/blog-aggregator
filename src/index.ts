@@ -5,6 +5,7 @@ import { handlerDeleteAllTableRows } from "./commands/reset";
 import { handlerAggregate } from "./commands/aggregate";
 import { handlerAddFeed, handlerListFeeds } from "./commands/feeds";
 import { handlerCreateFeedFollow, handlerListFeedFollow } from "./commands/feed-follows";
+import { middlewareLoggedIn } from "./lib/middleware/logged-in";
 
 async function main() {
 	const args = process.argv.slice(2);
@@ -20,10 +21,10 @@ async function main() {
 	registerCommand(commandsRegistry, "reset", handlerDeleteAllTableRows);
 	registerCommand(commandsRegistry, "users", handlerGetAllUsers);
 	registerCommand(commandsRegistry, "agg", handlerAggregate);
-	registerCommand(commandsRegistry, "addfeed", handlerAddFeed);
+	registerCommand(commandsRegistry, "addfeed", middlewareLoggedIn(handlerAddFeed));
 	registerCommand(commandsRegistry, "feeds", handlerListFeeds);
-	registerCommand(commandsRegistry, "follow", handlerCreateFeedFollow);
-	registerCommand(commandsRegistry, "following", handlerListFeedFollow);
+	registerCommand(commandsRegistry, "follow", middlewareLoggedIn(handlerCreateFeedFollow));
+	registerCommand(commandsRegistry, "following", middlewareLoggedIn(handlerListFeedFollow));
 
 	const commandName = args[0] as CommandName;
 	const commandArgs = args.slice(1);
