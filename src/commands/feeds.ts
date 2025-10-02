@@ -1,13 +1,14 @@
 import type { SelectFeed, SelectUser } from "src/lib/db/schema";
 import type { CommandName } from "./commands";
+import { readConfig } from "src/config";
+import { printFeedFollow } from "./feed-follows";
 import { getUser, getUserById } from "src/lib/db/queries/users";
 import { insertFeed, selectAllFeeds } from "src/lib/db/queries/feeds";
-import { createFeedFollows } from "src/lib/db/queries/follows";
-import { readConfig } from "src/config";
+import { createFeedFollow } from "src/lib/db/queries/feed-follows";
 
 export async function handlerAddFeed(cmdName: CommandName, ...args: string[]) {
     if (args.length !== 2) {
-        throw new Error(`usage: ${cmdName} <name> <url>`);
+        throw new Error(`usage: ${cmdName} <feed_name> <url>`);
     }
     const config = readConfig();
     const user = await getUser(config.currentUserName);
@@ -16,14 +17,21 @@ export async function handlerAddFeed(cmdName: CommandName, ...args: string[]) {
         throw new Error(`User ${config.currentUserName} not found`);
     }
 
-    const name = args[0];
+    const feedName = args[0];
     const url = args[1];
-    const feed = await insertFeed(name, url, user.id);
-    const feedFollows = await createFeedFollows(feed.id, user.id);
-    console.log(`Feed: ${feedFollows.feedName} Followed By: ${feedFollows.userName}`);
+    const feed = await insertFeed(feedName, url, user.id);
+
+    if (!feed) {
+        throw new Error(`Failed to create feed`);
+    }
+    const feedFollow = await createFeedFollow(feed.id, user.id);
+    printFeedFollow(user.name, feedFollow.feedName);
+
+    console.log("Feed created successfully:");
+    printFeed(feed, user);
 }
 
-export async function handlerSelectAllFeeds(_: CommandName) {
+export async function handlerListFeeds(_: CommandName) {
     const feeds = await selectAllFeeds();
 
     if (feeds.length === 0) {
@@ -36,6 +44,7 @@ export async function handlerSelectAllFeeds(_: CommandName) {
         const user = await getUserById(feed.userId);
         if (!user) throw new Error(`failed to find feed for ${feed.id}`);
         printFeed(feed, user);
+        console.log(`=====================================`);
     }
 }
 
