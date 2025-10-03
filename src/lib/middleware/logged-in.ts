@@ -11,7 +11,7 @@ export type UserCommandHandler = (
 
 type middlewareLoggedIn = (handler: UserCommandHandler) => CommandHandler;
 
-export function middlewareLoggedIn(handler: UserCommandHandler) {
+export const middlewareLoggedIn: middlewareLoggedIn = (handler) => {
     return async (cmdName: CommandName, ...args: string[]) => {
         const config = readConfig();
         const user = await getUser(config.currentUserName);
