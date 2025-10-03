@@ -1,6 +1,6 @@
 import type { CommandName } from "./commands";
 import type { SelectUser } from "src/lib/db/schema";
-import { createFeedFollow } from "src/lib/db/queries/feed-follows";
+import { createFeedFollow, unfollowFeedForUser } from "src/lib/db/queries/feed-follows";
 import { getFeedFollowsForUser } from "src/lib/db/queries/feed-follows";
 import { selectFeedByURL } from "src/lib/db/queries/feeds";
 
@@ -32,6 +32,22 @@ export async function handlerListFeedFollow(_: CommandName, user: SelectUser) {
     for (const ff of feedFollows) {
         console.log(`* %s`, ff.feedName);
     }
+}
+
+export async function handlerUnfollowFeed(cmdName: CommandName, user: SelectUser, ...args: string[]) {
+    if (args.length !== 1) {
+        throw new Error(`usage: ${cmdName} <feed_url>`);
+    }
+
+    const url = args[0];
+    const deletedRow = await unfollowFeedForUser(user.id, url);
+
+    if (!deletedRow) {
+        throw new Error(`error unfollowing Feed: ${url} for User: ${user}`);
+    }
+
+    console.log(`${user.name} successfully unfollowed Feed: ${deletedRow.feedId}`);
+    return;
 }
 
 export function printFeedFollow(username: string, feedname: string) {

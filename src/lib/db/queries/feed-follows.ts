@@ -1,7 +1,8 @@
-import type { InsertFeed, InsertFeedFollows, SelectFeedFollows } from "src/lib/db/schema";
+import type { InsertFeed, InsertFeedFollows, SelectFeedFollows, SelectUser, SelectFeed } from "src/lib/db/schema";
 import { feedFollows, feeds, users } from "src/lib/db/schema";
 import { db } from '../index';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
+import { selectFeedByURL } from "./feeds";
 
 export async function createFeedFollow(feedId: InsertFeedFollows["feedId"], userId: InsertFeed["userId"]) {
     try {
@@ -41,6 +42,22 @@ export async function getFeedFollowsForUser(userId: SelectFeedFollows['userId'])
         .from(feedFollows)
         .innerJoin(feeds, eq(feedFollows.feedId, feeds.id))
         .where(eq(feedFollows.userId, userId));
+
+    return result;
+}
+
+export async function unfollowFeedForUser(userId: SelectUser['id'], feedURL: SelectFeed['url']) {
+    const feed = await selectFeedByURL(feedURL);
+    if (feed?.id === undefined) {
+        throw new Error('feed not found');
+    }
+
+    const [result] = await db.delete(feedFollows)
+        .where(and(
+            eq(feedFollows.feedId, feed.id),
+            eq(feedFollows.userId, userId)
+        ))
+        .returning();
 
     return result;
 }

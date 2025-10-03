@@ -1,6 +1,16 @@
 import type { SelectUser } from "src/lib/db/schema";
 
-export type CommandName = 'login' | 'register' | 'reset' | 'users' | 'agg' | 'addfeed' | 'feeds' | 'follow' | 'following';
+export type CommandName =
+    'login' |
+    'register' |
+    'reset' |
+    'users' |
+    'agg' |
+    'addfeed' |
+    'feeds' |
+    'follow' |
+    'following' |
+    'unfollow';
 
 export type CommandHandler = (cmdName: CommandName, ...args: string[]) => Promise<void>;
 
