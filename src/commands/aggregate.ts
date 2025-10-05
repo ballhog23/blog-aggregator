@@ -1,6 +1,7 @@
-import { getNextFeedToFetch, markFeedFetched } from "src/lib/db/queries/feeds";
+import { getNextFeedToFetch, markFeedFetched, selectFeedByURL } from "src/lib/db/queries/feeds";
 import { fetchFeed } from "../lib/rss/rss";
-import { SelectFeed } from "src/lib/db/schema";
+import { InsertPost, SelectFeed } from "src/lib/db/schema";
+import { createPost, RSSItemPost } from "src/lib/db/queries/posts";
 
 export async function handlerAggregate(cmdName: string, ...args: string[]) {
     if (args.length !== 1) {
@@ -11,7 +12,7 @@ export async function handlerAggregate(cmdName: string, ...args: string[]) {
     const timeBetweenRequests = parseDuration(timeArg);
     if (!timeBetweenRequests) {
         throw new Error(
-            `invalid duration: ${timeArg} — use format 1h 30m 15s or 3500ms`,
+            `invalid duration: ${timeArg} — use format 1h | 30m | 15s | 3500ms`,
         );
     }
 
@@ -54,11 +55,28 @@ async function scrapeFeed(feed: SelectFeed) {
         `Feed ${feed.name} collected, ${feedData.channel.item.length} posts found`,
     );
 
-    // const items = feedData.channel.item;
+    for (const item of feedData.channel.item) {
+        try {
+            console.log(`Found post: %s`, item.title);
 
-    // for (const item of items) {
-    //     console.log(item.title)
-    // }
+            let date = new Date(item.pubDate);
+            if (isNaN(date.valueOf())) {
+                date = new Date();
+            }
+
+            await createPost({
+                url: item.link,
+                feedId: feed.id,
+                title: item.title,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                description: item.description,
+                publishedAt: new Date(item.pubDate),
+            } satisfies InsertPost);
+        } catch (error) {
+            console.log(`Error Creating Post: ${error instanceof Error ? error.message : error}`)
+        }
+    }
 }
 
 function parseDuration(duration: string) {

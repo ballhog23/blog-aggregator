@@ -10,7 +10,8 @@ export type CommandName =
     'feeds' |
     'follow' |
     'following' |
-    'unfollow';
+    'unfollow' |
+    'browse';
 
 export type CommandHandler = (cmdName: CommandName, ...args: string[]) => Promise<void>;
 

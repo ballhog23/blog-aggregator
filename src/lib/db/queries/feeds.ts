@@ -21,7 +21,8 @@ export async function selectFeedByURL(url: SelectFeed['url']) {
 
 export async function markFeedFetched(feedId: string) {
     try {
-        const result = await db.update(feeds)
+        const result = await db
+            .update(feeds)
             .set({ lastFetchedAt: new Date() })
             .where(eq(feeds.id, feedId))
             .returning();
@@ -37,7 +38,7 @@ export async function getNextFeedToFetch() {
     const result = await db
         .select()
         .from(feeds)
-        .orderBy(sql`${feeds.lastFetchedAt} desc nulls first`)
+        .orderBy(sql`${feeds.lastFetchedAt} nulls first`)
         .limit(1);
 
     return firstOrUndefined(result);
