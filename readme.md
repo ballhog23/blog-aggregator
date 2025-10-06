@@ -32,7 +32,7 @@
 
 4. Change Directory to project: `cd blog-aggregator`
 
-5. Run: `npm init -y`
+5. Run: `npm install`
 
     - Adds our dependencies.
 
